@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "01",
+    "description": "작품 준비중",
+    "shopLink": "https://www.etsy.com/?ref=lgo",
+    "postLink": "/blog/first-post",
+    "image": "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=500&auto=format&fit=crop",
+    "pubDate": "2024-01-20"
+  },
+  {
+    "id": 2,
+    "title": "02",
+    "description": "두 번째 작품",
+    "shopLink": "https://www.etsy.com/?ref=lgo",
+    "postLink": "/blog/second-post",
+    "image": "https://images.unsplash.com/photo-...",
+    "pubDate": "2024-02-15"
+  }
+]

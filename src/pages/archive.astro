@@ -1,0 +1,195 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) => 
+  Number(new Date(b.data.pubDate)) - Number(new Date(a.data.pubDate))
+);
+---
+
+<BaseLayout title="Archive">
+  <div class="archive-header">
+    <div class="filter-bar">
+      {['all', 'draw', 'dig', 'dwell'].map(cat => (
+        <button class="filter-btn" class:list={[{ active: cat === 'all' }]} data-cat={cat}>
+          {cat.toUpperCase()}
+        </button>
+      ))}
+    </div>
+    <div class="search-area">
+      <input type="text" id="archiveSearch" placeholder="SEARCH..." />
+    </div>
+  </div>
+
+<div class="archive-list">
+    {posts.map(post => (
+      <div class="archive-item" 
+           data-cats={post.data.categories?.join(',')} 
+           data-fulltext={`${post.data.title_ko} ${post.data.title_en} ${post.data.title_ru}`.toLowerCase()}>
+        <div class="card-meta">
+          <div class="meta-left">
+            <span>{post.data.pubDate.toLocaleDateString()}</span>
+            <div class="item-cats">{post.data.categories?.join(' / ')}</div>
+          </div>
+          
+          {/* 아카이브용 작은 언어 표시 (글씨로만 깔끔하게) */}
+          <div class="item-langs">
+            {post.data.has_ko && <span class="lang-text">KO</span>}
+            {post.data.has_en && <span class="lang-text">EN</span>}
+            {post.data.has_ru && <span class="lang-text">RU</span>}
+          </div>
+        </div>
+        
+        <a href={`/blog/${post.id}`} class="card-link">
+          <h3 class="post-title">{post.data.title_ko}</h3>
+        </a>
+      </div>
+    ))}
+  </div>
+
+  <style>
+
+    .archive-container {
+          width: 100%;
+            max-width: 900px; 
+         
+            margin-left: auto;
+            margin-right: auto;
+    
+            padding: 2rem;
+            box-sizing: border-box;
+          }
+
+    .archive-header {
+      display: flex; 
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 4rem;
+      border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;
+      flex-wrap: nowrap;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 8px; /* 버튼 사이 간격 */
+      flex-wrap: nowrap; /* 한 줄 유지 ✨ */
+    }
+
+    .filter-btn {
+    background: none; 
+    border: none; 
+    padding: 0 15px 0 0;
+    font-size: 0.8rem; 
+    cursor: pointer; 
+    color: var(--gray);
+    font-family: inherit;
+    transition: color 0.2s;
+    line-height: 1; /* 불필요한 높이 제거 */
+    }
+
+    .filter-btn.active { color: var(--text); font-weight: bold; }
+    
+    .search-area {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%; 
+      
+    }
+
+    .search-area input {
+      background: transparent; border: none; text-align: right;
+      color: var(--text); font-size: 0.8rem; font-family: inherit; outline: none;
+      width: 150px;
+    }
+
+    .archive-list { display: flex; flex-direction: column; }
+
+    .archive-item { 
+      padding: 2.5rem 0; border-bottom: 1px solid var(--border);
+      transition: 0.3s;
+    }
+    .archive-item:hover {
+      border-bottom-color: var(--text);
+      padding-left: 0.15rem;
+    }
+
+.card-meta {
+    display: flex;
+    justify-content: space-between; /* 날짜/카테고리는 왼쪽, 언어는 오른쪽 */
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-bottom:1rem;
+  }
+
+  .meta-left {
+    display: flex;
+    gap: 12px;
+  }
+
+  .item-langs {
+    display: flex;
+    gap: 10px;
+  }
+
+  .lang-text {
+    font-size: 0.75rem;
+    letter-spacing: 0.02rem;
+    /* 필요하다면 작은 점을 찍어 구분할 수도 있습니다 */
+  }
+
+    .post-title {
+      margin: 0;
+      font-weight: normal;
+      font-size: 1.3rem;
+      line-height: 1.4;
+    }
+
+    .card-link { text-decoration: none; color: inherit; display: block;}
+
+  </style>
+
+  <script is:inline>
+
+   function applyArchiveSettings() {
+    // 폰트나 스타일 관련 처리가 자바스크립트로 필요할 경우 여기에 작성
+    console.log("Archive settings applied");
+  }
+
+    // 첫 로드 시
+    applyArchiveSettings();
+    // 페이지 전환(View Transition) 시
+    document.addEventListener('astro:after-swap', applyArchiveSettings);
+
+    function initArchive() {
+      const searchInput = document.getElementById('archiveSearch');
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const items = document.querySelectorAll('.archive-item');
+
+      function updateList() {
+        const activeCat = document.querySelector('.filter-btn.active')?.dataset.cat || 'all';
+        const term = searchInput.value.toLowerCase();
+
+        items.forEach(item => {
+          const itemCats = item.dataset.cats || '';
+          const fullText = item.dataset.fulltext || '';
+          const matchesCat = (activeCat === 'all' || itemCats.includes(activeCat));
+          const matchesSearch = fullText.includes(term);
+          item.style.display = (matchesCat && matchesSearch) ? 'block' : 'none';
+        });
+      }
+
+      filterBtns.forEach(btn => {
+        btn.onclick = () => {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          updateList();
+        };
+      });
+      if(searchInput) searchInput.oninput = updateList;
+    }
+
+    initArchive();
+    document.addEventListener('astro:after-swap', initArchive);
+  </script>
+</BaseLayout>

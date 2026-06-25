@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allPosts = (await getCollection('blog')).sort((a, b) => 
+  Number(new Date(b.data.pubDate)) - Number(new Date(a.data.pubDate))
+);
+const initialPosts = allPosts.slice(0, 9);
+---
+
+<BaseLayout title="Home">
+  <div class="grid">
+    {initialPosts.map(post => (
+      <div class="post-card">
+        <div class="card-meta">
+          <span class="pub-date">{post.data.pubDate.toLocaleDateString()}</span>
+          
+          {/* 실제 데이터가 있는 언어만 버튼으로 노출합니다 */}
+          <div class="card-langs">
+             {post.data.has_ko && (
+               <button class="local-lang-btn active" onclick="changeLang(this, 'ko')">KO</button>
+             )}
+             {post.data.has_en && (
+               <button class="local-lang-btn" onclick="changeLang(this, 'en')">EN</button>
+             )}
+             {post.data.has_ru && (
+               <button class="local-lang-btn" onclick="changeLang(this, 'ru')">RU</button>
+             )}
+          </div>
+        </div>
+        
+        <a href={`/blog/${post.id}`} class="card-link">
+          <h3 class="title-text" 
+              data-ko={post.data.title_ko} 
+              data-en={post.data.title_en} 
+              data-ru={post.data.title_ru}>
+            {post.data.title_ko}
+          </h3>
+        </a>
+      </div>
+    ))}
+  </div>
+
+    <div class="load-more-container">
+      <a href="/archive" class="load-more-btn">
+        ENTER THE FULL ARCHIVE →
+      <a href="/atelier" class="load-more-btn highlight">VISIT ATELIER →</a>
+    </div>
+        
+    </a>
+  </div>
+
+  
+
+<style>
+
+.load-more-container {
+    display: flex;
+    gap: 16px;
+
+    justify-content: center;
+}
+
+  .grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 40px;
+    justify-content: center;
+  }
+
+  .post-card { 
+    border: 1px solid var(--border); 
+    padding: 2.5rem; 
+    border-radius: 0; 
+    display: flex; flex-direction: column; 
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .post-card:hover { 
+    border-color: var(--text); 
+    transform: translateY(-4px);
+  }
+
+  .card-meta { 
+    
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 3rem; 
+    font-size: 0.7rem; color: var(--gray);
+    letter-spacing: 0.05em;
+  }
+
+  .card-link { text-decoration: none; color: inherit; }
+
+  
+  .load-more-container { margin-top: 10rem; margin-bottom: 5rem; text-align: center; }
+  .load-more-btn { 
+    font-size: 0.7rem; color: var(--gray); text-decoration: none; 
+    border: 1px solid var(--border); padding: 16px 40px; border-radius: 40px; 
+    letter-spacing: 2px; transition: 0.3s;
+  }
+  .load-more-btn:hover { border-color: var(--text); color: var(--text); }
+</style>
+
+<script is:inline>
+  function changeLang(btn, lang) {
+    const card = btn.closest('.post-card');
+    const title = card.querySelector('.title-text');
+    if (title) title.innerText = title.getAttribute(`data-${lang}`);
+    card.querySelectorAll('.local-lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+</script>
+</BaseLayout>

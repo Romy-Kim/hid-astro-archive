@@ -1,0 +1,62 @@
+---
+// 이 구역이 비어있더라도 ---는 있어야 파일이 정상 작동합니다.
+---
+
+<html lang="ko">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<title>HID ARCHIVE</title>
+		<style>
+			:root {
+				--bg-color: #ffffff;
+				--text-color: #1a1a1a;
+				--accent-color: #888888;
+			}
+			body {
+				margin: 0;
+				height: 100vh;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				background-color: var(--bg-color);
+				color: var(--text-color);
+				font-family: sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
+			.entrance-link {
+				font-size: 1.5rem;
+				font-weight: 300;
+				letter-spacing: 0.3em;
+				text-decoration: none;
+				color: var(--text-color);
+				transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+				padding: 1rem;
+				display: block; /* 영역 확보 */
+			}
+			.entrance-link:hover {
+				letter-spacing: 0.5em;
+				opacity: 0.4;
+			}
+			.slogan {
+				margin-top: 2rem;
+				font-size: 0.75rem;
+				letter-spacing: 0.1em;
+				color: var(--accent-color);
+				font-weight: 300;
+				opacity: 0;
+				animation: fadeIn 2s forwards;
+				animation-delay: 0.5s;
+			}
+			@keyframes fadeIn {
+				to { opacity: 1; }
+			}
+		</style>
+	</head>
+	<body>
+		<a href="/archive" class="entrance-link">HID</a>
+		<p class="slogan">깊은 고립을 선명한 공감으로</p>
+	</body>
+</html>

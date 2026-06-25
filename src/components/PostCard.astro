@@ -1,0 +1,35 @@
+---
+const { post } = Astro.props;
+---
+<div class="post-card" data-title-ko={post.data.title_ko} data-title-en={post.data.title_en} data-title-ru={post.data.title_ru}>
+  <div class="card-header">
+    <span class="date">{post.data.pubDate.toLocaleDateString()}</span>
+    <div class="card-lang-selector">
+      <button onclick="changeCardLang(this, 'ko')" class="local-lang-btn active">KO</button>
+      <button onclick="changeCardLang(this, 'en')" class="local-lang-btn">EN</button>
+      <button onclick="changeCardLang(this, 'ru')" class="local-lang-btn">RU</button>
+    </div>
+  </div>
+  <a href={`/blog/${post.id.split('/').pop()}`} class="card-title">
+    <h3 class="title-text">{post.data.title_ko}</h3>
+  </a>
+</div>
+
+<script is:inline>
+  function changeCardLang(btn, lang) {
+    const card = btn.closest('.post-card');
+    const title = card.querySelector('.title-text');
+    title.innerText = card.getAttribute(`data-title-${lang}`);
+    
+    card.querySelectorAll('.local-lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+</script>
+
+<style>
+  .post-card { margin-bottom: 2rem; border-bottom: 1px solid #fcfcfc; padding-bottom: 1rem; }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .date { font-size: 0.7rem; color: #bbb; }
+  .card-title { text-decoration: none; color: inherit; }
+  .card-title h3 { margin: 0; font-size: 1.1rem; font-weight: normal; }
+</style>

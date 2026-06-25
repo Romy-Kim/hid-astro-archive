@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="About">
+  <div style="display: flex; justify-content: flex-end; margin-bottom: 2rem;">
+    <div class="local-lang-control">
+      <button onclick="toggleAbout('ko', this)" class="local-lang-btn active">KO</button>
+      <button onclick="toggleAbout('en', this)" class="local-lang-btn">EN</button>
+      <button onclick="toggleAbout('ru', this)" class="local-lang-btn">RU</button>
+    </div>
+  </div>
+
+  <article id="aboutContent" style="word-break: keep-all;">
+    <div id="about-ko" class="about-section">
+      <p>나는 관심과 호기심을 끝까지 밀고 나간다. 한 우물을 파지 않고, 여러 우물을 판다.</p>
+      <p>그 모습을 아무에게도 들키고 싶지 않아 입구를 숨겨 놓고, 보이지 않는 아래로 혼자 파내려 갔다. 그렇게 나만의 개미 굴이 만들어졌다.</p>
+      <p>모든 것을 이해받을 수 없다고 느낄 때면 차라리 전부를 숨기고 싶어진다. 하지만 어쩌면 그 마음은 결국, 전부를 이해 받고 싶은 마음인지도 모른다.</p>
+      <p style="margin: 2rem 0; font-weight: bold;">How I Draw / How I Dig / How I Dwell</p>
+      <p>HID Archive는 내가 숨겨 둔 것들이자, 사실은 이해받고 싶은 이야기를 꺼내 보이는 나만의 개미 굴 같은 저장소이다. 전부를 보여줄 수 없음을 알지만, 기록을 통해 개미굴에서의 고립과 독점을 공유와 공감으로 바꿔 나가고 싶다.</p>
+    </div>
+
+    <div id="about-en" class="about-section" style="display:none">
+      <p>I push my interests and curiosities to the very end. Instead of digging a single well, I dig many.</p>
+      <p>Not wanting anyone to witness this, I hid the entrance and dug down alone into the invisible depths. And so, my own anthill was created.</p>
+      <p>When I feel that everything cannot be understood, I’d rather hide it all. Yet perhaps, that heart is ultimately a longing to be understood in its entirety.</p>
+      <p style="margin: 2rem 0; font-weight: bold;">How I Draw / How I Dig / How I Dwell</p>
+      <p>HID Archive is a repository like an anthill—the things I have hidden, yet stories I truly wish to be understood. I know I cannot show everything, but through these records, I want to transform the isolation and monopoly of the anthill into sharing and empathy.</p>
+    </div>
+
+    <div id="about-ru" class="about-section" style="display:none">
+      <p>Я довожу свои интересы и любопытство до самого конца. Я не копаю один колодец, я копаю многие.</p>
+      <p>Не желая, чтобы кто-то это видел, я спрятал вход и в одиночку зарылся в невидимую глубину. Так возник мой собственный муравейник.</p>
+      <p>Когда я чувствую, что не могу быть понятым во всем, мне хочется скрыть всё целиком. Но, возможно, это чувство — на самом деле желание быть понятым до конца.</p>
+      <p style="margin: 2rem 0; font-weight: bold;">How I Draw / How I Dig / How I Dwell</p>
+      <p>HID Archive — это хранилище, подобное муравейнику: то, что я скрыл, и истории, которые на самом деле хочу поведать. Я знаю, что не могу показать всё, но через записи я хочу превратить изоляцию и монополию муравейника в сопереживание.</p>
+    </div>
+  </article>
+
+  <script is:inline>
+    function toggleAbout(lang, btn) {
+      document.querySelectorAll('.about-section').forEach(el => el.style.display = 'none');
+      document.getElementById(`about-${lang}`).style.display = 'block';
+      
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+</BaseLayout>обственный муравейник.</p>
+    <p>Когда я чувствую, что не могу быть понятым во всем, мне хочется скрыть всё целиком. Но, возможно, это чувство — на самом деле подспудное желание быть понятым до конца.</p>
+    
+    <div class="philosophy-tags" style="margin: 2rem 0; font-weight: bold; letter-spacing: 1px;">
+      How I Draw / How I Dig / How I Dwell
+    </div>
+    
+    <p><strong>HID Archive</strong> — это хранилище, подобное муравейнику: то, что я скрыл, и истории, которые на самом деле хочу поведать. Я знаю, что не могу показать всё, но через записи я хочу превратить изоляцию и монополию муравейника в сопереживание и сопричастность.</p>
+  </div>
+    </div>
+  </section>
+
+  <style>
+    .about-title { margin-bottom: 3rem; font-weight: normal; letter-spacing: -1px; }
+    .content-section { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+
+  <script>
+    function setupAboutLang() {
+      const buttons = document.querySelectorAll('#aboutLangSelector button');
+      const titleSpans = document.querySelectorAll('.about-title [data-title]');
+      const contentSections = document.querySelectorAll('#aboutBody .content-section');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.getAttribute('data-lang');
+          if (!lang) return;
+
+          // 버튼 활성화
+          buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          // 제목 전환
+          titleSpans.forEach(t => {
+            const el = t as HTMLElement;
+            el.style.display = el.getAttribute('data-title') === lang ? 'block' : 'none';
+          });
+
+          // 본문 전환
+          contentSections.forEach(sec => {
+            const el = sec as HTMLElement;
+            el.style.display = el.classList.contains(lang) ? 'block' : 'none';
+          });
+        });
+      });
+    }
+
+    setupAboutLang();
+    document.addEventListener('astro:after-swap', setupAboutLang);
+  </script>
+</BaseLayout>

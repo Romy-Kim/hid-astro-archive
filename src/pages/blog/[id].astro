@@ -1,0 +1,99 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { id: post.id.includes('/') ? post.id.split('/').pop() : post.id }, 
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { has_ko, has_en, has_ru } = post.data;
+---
+
+<BaseLayout title={post.data.title_ko}>
+  <a href="javascript:history.back()" slot="back-button" class="back-btn">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    <span>BACK</span>
+  </a>
+
+  <article>
+    <div class="detail-header">
+       <div class="card-langs">
+          {has_ko && <button class="local-lang-btn active" data-lang="ko">KO</button>}
+          {has_en && <button class="local-lang-btn" data-lang="en">EN</button>}
+          {has_ru && <button class="local-lang-btn" data-lang="ru">RU</button>}
+       </div>
+       <h1 class="detail-title">
+         <span class="t-ko">{post.data.title_ko}</span>
+         <span class="t-en" style="display:none">{post.data.title_en}</span>
+         <span class="t-ru" style="display:none">{post.data.title_ru}</span>
+       </h1>
+       <div class="detail-date">{post.data.pubDate.toLocaleDateString()}</div>
+    </div>
+
+    <div class="prose" id="post-content">
+      <Content />
+    </div>
+  </article>
+
+<script is:inline>
+  // 1. 핵심 기능을 함수로 만듭니다.
+  function initLanguageFilter() {
+    function updateDisplay(lang) {
+      // 제목 제어
+      const tKo = document.querySelector('.t-ko');
+      const tEn = document.querySelector('.t-en');
+      const tRu = document.querySelector('.t-ru');
+      if(tKo) tKo.style.display = lang === 'ko' ? 'inline' : 'none';
+      if(tEn) tEn.style.display = lang === 'en' ? 'inline' : 'none';
+      if(tRu) tRu.style.display = lang === 'ru' ? 'inline' : 'none';
+
+      // 본문 필터링
+      const prose = document.querySelector('#post-content');
+      if (prose) {
+        const children = Array.from(prose.children);
+        let currentLang = 'ko';
+        children.forEach(el => {
+          if (el.tagName === 'H2') {
+            const text = el.innerText.toUpperCase();
+            if (text.includes('KOREAN')) currentLang = 'ko';
+            else if (text.includes('ENGLISH')) currentLang = 'en';
+            else if (text.includes('RUSSIAN')) currentLang = 'ru';
+            el.style.display = 'none';
+            return;
+          }
+          el.style.display = (currentLang === lang) ? 'block' : 'none';
+        });
+      }
+
+      // 버튼 활성 상태
+      document.querySelectorAll('.local-lang-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+      });
+    }
+
+    // 버튼 클릭 이벤트 연결
+    document.querySelectorAll('.local-lang-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const targetLang = e.currentTarget.getAttribute('data-lang');
+        updateDisplay(targetLang);
+      });
+    });
+
+    // 기본 실행
+    updateDisplay('ko');
+  }
+
+  // 2. [핵심] 페이지가 처음 로드될 때와 '전환'될 때 모두 실행되게 합니다.
+  document.addEventListener('astro:page-load', initLanguageFilter);
+  
+  // 혹시 모르니 즉시 실행도 한 번 더 (안전장치)
+  initLanguageFilter();
+</script>

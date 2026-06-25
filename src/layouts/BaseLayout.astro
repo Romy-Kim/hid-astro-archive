@@ -1,0 +1,130 @@
+---
+import { ClientRouter } from 'astro:transitions';
+const { title } = Astro.props;
+---
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title} | HID</title>
+    <ClientRouter fallback="swap" />
+
+    <style is:global>
+          @font-face { font-family: 'GowunBatang'; src: url('/fonts/GowunBatang-Regular.ttf') format('truetype'); font-weight: normal; }
+          @font-face { font-family: 'GowunBatang'; src: url('/fonts/GowunBatang-Bold.ttf') format('truetype'); font-weight: bold; }
+
+          :root { 
+            --site-max-width: 900px; /* 사이트의 전체 기준 너비 */
+            --site-padding: 2rem;      /* 양옆 여백 */
+            --bg: #ffffff; --text: #1a1a1a; --border: #f0f0f0; --gray: #bbb; --btn-bg: #fff;}
+          [data-theme='dark'] { --bg: #121212; --text: #e0e0e0; --border: #2a2a2a; --gray: #666;  --btn-bg: #1e1e1e; }
+      
+
+          body { font-family: 'GowunBatang', serif; margin: 0; background-color: var(--bg); color: var(--text); }
+
+          /* 💡 메인 본문 */
+          main { max-width: 800px; margin: 0 auto; padding: 4rem 2rem; min-height: 70vh; }
+
+          /* 💡 사이트 제목: */
+          .nav-header {
+            position: sticky; top: 0; z-index: 100; background: var(--bg);
+            display: flex; justify-content: center;
+            border-bottom: 1px solid var(--border);
+          }
+
+          .title-wrapper {
+            width: 100%;
+            max-width: 900px;          
+            margin: 0 auto;    
+            padding: 2rem;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+          }
+
+          .site-title {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 2px; }
+
+
+            .nav-links {
+              display: flex;
+              gap: 24px; /* 메뉴 사이 간격 */
+              margin-left: auto;
+              align-items: center;
+            }
+
+
+          .nav-links a {
+            text-decoration: none;      /* 밑줄 제거 */
+            color: var(--gray);         /* 기본 색상 (변수 사용 권장) */
+            font-size: 0.9rem;          /* 글자 크기 */
+            font-weight: 500;           /* 글자 두께 */
+            letter-spacing: 0.05em;     /* 자간 (살짝 넓히면 고급스러워요) */
+            transition: color 0.2s;     /* 색상 변할 때 부드럽게 */
+            font-family: inherit;
+          }
+          
+          .nav-links a:hover {
+           color: var(--text);         /* 마우스 올리면 진해지게 */
+            }
+
+
+
+          /* 언어 버튼 UI (연하고 예쁜 스타일) */
+          .card-langs { display: flex; align-items: center; gap: 4px; }
+          .local-lang-btn { background: none; border: none; cursor: pointer; font-size: 0.65rem; color: var(--gray); font-family: inherit; }
+          .card-langs button + button::before { content: "/"; margin-right: 4px; color: var(--border); }
+          .local-lang-btn.active { color: var(--text); font-weight: bold; text-decoration: underline; text-underline-offset: 4px; }
+
+          footer { margin-top: 10rem; padding: 4rem 2rem; text-align: center; border-top: 1px solid var(--border); }
+          .footer-links { display: flex; justify-content: center; gap: 15px; }
+          .footer-links a { color: var(--gray); text-decoration: none; font-size: 0.65rem; letter-spacing: 1px; }
+        
+        </style>
+      </head>
+
+    <body>
+    <header class="nav-header">
+      <div class="title-wrapper">
+        <a href="/home" class="site-title">HID ARCHIVE</a>
+
+      <nav class="nav-links">
+      <a href="/archive">ARCHIVE</a>
+      <a href="/atelier" class="active">ATELIER</a>
+    </nav>
+  </div>
+            </button>
+        </header>
+        <main><slot /></main>
+    <footer>
+          <div class="footer-links">
+            <a href="/about">ABOUT</a>
+            <a href="https://instagram.com/..." target="_blank">INSTAGRAM</a>
+            <a href="https://www.youtube.com/@howidrawthings-HID" target="_blank">YOUTUBE</a>
+            <a href="https://brunch.co.kr/@3254ef239111488" target="_blank">BRUNCH</a>
+            </div>
+            {/*<p class="copyright">©</p> ** 상표 출원 후*/}
+        </footer>
+
+    <script is:inline>
+      const applyTheme = () => {
+        const theme = localStorage.getItem('theme-preference') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      };
+      const setupToggle = () => {
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme');
+          const next = current === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          localStorage.setItem('theme-preference', next);
+        });
+      };
+      applyTheme(); setupToggle();
+      document.addEventListener('astro:after-swap', () => { applyTheme(); setupToggle(); });
+    </script>
+  </body>
+</html>
